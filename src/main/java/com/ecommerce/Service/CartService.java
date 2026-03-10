@@ -1,5 +1,6 @@
 package com.ecommerce.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -22,7 +23,12 @@ public class CartService {
 	}
 
 	public Cart addCart(Cart cart) {
-		User user = ur.findById(cart.getUser().getId()).orElse(null);
+		User user = ur.findById(cart.getUser().getId()).orElseThrow();
+		
+		cart.setUser(user);
+		
+	    cart.setCreated_at(new Timestamp(System.currentTimeMillis()));
+
         cart.setUser(user);
         
         return cr.save(cart);

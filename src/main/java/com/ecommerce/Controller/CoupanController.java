@@ -20,7 +20,7 @@ public class CoupanController {
         return cs.createCoupan(coupan);
     }
 
-    @GetMapping("get-coupan")
+    @GetMapping("get-all-coupan")
     public List<Coupan> getAllCoupan() {
         return cs.getAllCoupan();
     }

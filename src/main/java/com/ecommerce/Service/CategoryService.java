@@ -25,4 +25,18 @@ public class CategoryService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+    
+    public Category updateCategory(int id, Category category) {
+
+        Category existing = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existing.setName(category.getName());
+
+        return categoryRepository.save(existing);
+    }
+
+    public void deleteCategory(int id) {
+        categoryRepository.deleteById(id);
+    }
 }

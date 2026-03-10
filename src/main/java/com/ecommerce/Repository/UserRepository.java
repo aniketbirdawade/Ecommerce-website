@@ -6,4 +6,6 @@ import com.ecommerce.Entity.User;
 
 public interface UserRepository extends JpaRepository<User, Integer>{
 
+	User findByEmail(String email);
+
 }

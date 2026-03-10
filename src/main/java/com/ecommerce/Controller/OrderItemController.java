@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.ecommerce.Entity.Cart_item;
 import com.ecommerce.Entity.Order_items;
 import com.ecommerce.Service.OrderItemService;
 
@@ -38,4 +39,10 @@ public class OrderItemController {
      ois.deleteItem(id);
         return "Order item deleted successfully!";
     }
+    
+    @GetMapping("/order/{orderId}")
+    public List<Order_items> getOrderItems(@PathVariable int orderId) {
+        return ois.getOrderItemsByOrderId(orderId);
+    }
+    
 }

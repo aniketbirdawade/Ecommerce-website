@@ -15,7 +15,7 @@ import com.ecommerce.Service.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
+ 
     private final UserService us;
 
     public UserController(UserService us) {

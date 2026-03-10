@@ -47,4 +47,9 @@ public class OrderItemService {
     public void deleteItem(Integer id) {
         oir.deleteById(id);
     }
+    
+    public List<Order_items> getOrderItemsByOrderId(int orderId) {
+        return oir.findByOrderId(orderId);
+    }
+
 }

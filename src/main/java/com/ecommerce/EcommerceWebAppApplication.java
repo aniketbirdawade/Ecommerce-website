@@ -10,7 +10,7 @@ public class EcommerceWebAppApplication {
 		SpringApplication.run(EcommerceWebAppApplication.class, args);
 		
 		System.out.println("App Started...");
-	}
+	}	
 
 }
 

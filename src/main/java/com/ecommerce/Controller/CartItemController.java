@@ -48,4 +48,11 @@ public class CartItemController {
         cis.deleteItem(id);
         return "Cart item deleted successfully";
     }
+    
+    @GetMapping("/cart/{cartId}")
+    public List<Cart_item> getItemsByCart(@PathVariable int cartId) {
+        return cis.getByCartId(cartId);
+    }
+    
+    
 }

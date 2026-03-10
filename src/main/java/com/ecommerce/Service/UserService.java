@@ -28,4 +28,19 @@ public class UserService {
     public User getUser(Integer id) {
         return ur.findById(id).orElse(null);
     }
+    
+    public User register(User user) {
+        return ur.save(user);
+    }
+
+    public User login(String email, String password) {
+
+        User user = ur.findByEmail(email);
+
+        if(user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+
+        throw new RuntimeException("Invalid credentials");
+    }
 }

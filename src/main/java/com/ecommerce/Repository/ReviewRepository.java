@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.ecommerce.Entity.Order_items;
+import com.ecommerce.Entity.Review;
 
 @Repository
-public interface OrderItemRepository extends JpaRepository<Order_items, Integer> {
+public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
-    List<Order_items> findByOrderId(Integer orderId);
+    List<Review> findByProductId(int productId);
 
 }

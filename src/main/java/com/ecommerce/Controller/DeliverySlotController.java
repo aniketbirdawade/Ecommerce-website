@@ -1,4 +1,4 @@
-package com.ecommerce.Controller;
+	package com.ecommerce.Controller;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class DeliverySlotController {
         return dss.createSlot(slot);
     }
 
-    @GetMapping("get-slot")
+    @GetMapping("get-all-slot")
     public List<Delivary_Slot> getAllSlots() {
         return dss.getAllSlots();
     }

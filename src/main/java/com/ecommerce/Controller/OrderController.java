@@ -16,7 +16,7 @@ public class OrderController {
     }
 
     // Create Order
-    @PostMapping("add-order")
+    @PostMapping("/add-order")
     public Order createOrder(@RequestBody Order order) {
     	
     	System.out.print(order);
@@ -30,7 +30,7 @@ public class OrderController {
     }
 
     // Get All Orders
-    @GetMapping("get-orders")
+    @GetMapping("/get-all-orders")
     public List<Order> getAllOrders() {
         return orderService.getAllOrders();
     }
@@ -47,4 +47,21 @@ public class OrderController {
         orderService.deleteOrder(id);
         return "Order deleted successfully";
     }
+    
+    @PostMapping("/place/{userId}")
+    public Order placeOrder(@PathVariable Integer userId) {
+        return orderService.placeOrder(userId);
+    }
+    
+    @PutMapping("/{id}/status")
+    public Order updateStatus(@PathVariable int id, @RequestBody String status) {
+        return orderService.updateStatus(id, status);
+    }
+    
+    @GetMapping("/user/{userId}")
+    public List<Order> getOrdersByUser(@PathVariable int userId) {
+        return orderService.getOrdersByUser(userId);
+    }
+    
+    
 }

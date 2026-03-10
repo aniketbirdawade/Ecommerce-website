@@ -21,7 +21,7 @@ public class AddressController {
         return as.createAddress(address);
     }
 
-    @GetMapping("get-address")
+    @GetMapping("get-all-address")
     public List<Address> getAllAddress() {
         return as.getAllAddress();
     }
@@ -29,5 +29,10 @@ public class AddressController {
     @GetMapping("/{id}")
     public Address getAddress(@PathVariable Integer id) {
         return as.getAddress(id);
+    }
+    
+    @DeleteMapping("/{id}")
+    public void deleteAddress(@PathVariable int id) {
+        as.deleteAddress(id);
     }
 }

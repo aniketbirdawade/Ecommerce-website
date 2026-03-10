@@ -32,4 +32,8 @@ public class AddressService {
     public Address getAddress(Integer id) {
         return ar.findById(id).orElse(null);
     }
+    
+    public void deleteAddress(int id) {
+        ar.deleteById(id);
+    }
 }
