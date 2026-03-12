@@ -1,0 +1,8 @@
+package com.ecommerce.Repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.ecommerce.Entity.HsnMaster;
+
+public interface HsnMasterRepository extends JpaRepository<HsnMaster, String> {
+
+}
