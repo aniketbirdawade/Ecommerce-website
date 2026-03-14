@@ -16,12 +16,12 @@ public class OrderController {
     }
 
     // Create Order
-    @PostMapping("/add-order")
-    public Order createOrder(@RequestBody Order order) {
-    	
-    	System.out.print(order);
-        return orderService.createOrder(order);
-    }
+//    @PostMapping("/add-order")
+//    public Order createOrder(@RequestBody Order order) {
+//    	
+//    	System.out.print(order);
+//        return orderService.createOrder(order);
+//    }
 
     // Get Order by ID
     @GetMapping("/{id}")

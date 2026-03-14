@@ -1,18 +1,22 @@
 package com.ecommerce.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ecommerce.Entity.Address;
+import com.ecommerce.Entity.Cart_item;
 import com.ecommerce.Entity.Coupan;
 import com.ecommerce.Entity.Delivary_Slot;
 import com.ecommerce.Entity.Order;
 import com.ecommerce.Entity.Order_items;
+import com.ecommerce.Entity.Product;
 import com.ecommerce.Entity.User;
 import com.ecommerce.Repository.AddressRepository;
+import com.ecommerce.Repository.CartItemRepository;
 import com.ecommerce.Repository.CoupanRepository;
 import com.ecommerce.Repository.DeliverySlotRepository;
 import com.ecommerce.Repository.OrderItemRepository;
@@ -28,13 +32,15 @@ public class OrderService {
     private final CoupanRepository cr;
     private final DeliverySlotRepository dsr;
     private final OrderItemRepository oir;
+    private final CartItemRepository cir;
 
     public OrderService(OrderRepository or,
                         UserRepository ur,
                         AddressRepository ar,
                         CoupanRepository cr,
                         DeliverySlotRepository dsr,
-                        OrderItemRepository oir) {
+                        OrderItemRepository oir,
+                        CartItemRepository cir) {
 
         this.or = or;
         this.ur = ur;
@@ -42,9 +48,155 @@ public class OrderService {
         this.cr = cr;
         this.dsr = dsr;
         this.oir = oir;
+        this.cir = cir;
     }
 
-    // Create Order
+    // ===============================
+    // PLACE ORDER FROM CART
+    // ===============================
+    @Transactional
+    public Order placeOrder(Integer userId) {
+
+        User user = ur.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setAddress(ar.findById(1).orElseThrow());
+        order.setCoupan(cr.findById(1).orElseThrow());
+        order.setDelivary_slot(dsr.findById(1).orElseThrow());
+        order.setOrder_status("PLACED");
+        order.setPayment_status("PENDING");
+        order.setCreated_at(new Timestamp(System.currentTimeMillis()));
+
+        Order savedOrder = or.save(order);
+
+        List<Cart_item> cartItems = cir.findByCartUserId(userId);
+
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Cart is empty");
+        }
+
+        BigDecimal subTotal = BigDecimal.ZERO;
+        BigDecimal totalGST = BigDecimal.ZERO;
+
+        for (Cart_item cartItem : cartItems) {
+
+            Product product = cartItem.getProduct();
+            int quantity = cartItem.getQuantity();
+
+            BigDecimal price = product.getPrice();
+
+            // price × qty
+            BigDecimal itemSubTotal = price.multiply(BigDecimal.valueOf(quantity));
+
+            BigDecimal gstRate = BigDecimal.ZERO;
+
+            if (product.getHsn() != null) {
+                gstRate = BigDecimal.valueOf(product.getHsn().getGst_rate());
+            }
+
+            // GST calculation
+            BigDecimal gstAmount = itemSubTotal
+                    .multiply(gstRate)
+                    .divide(BigDecimal.valueOf(100));
+
+            // final price for item
+            BigDecimal totalPrice = itemSubTotal.add(gstAmount);
+
+            Order_items orderItem = new Order_items();
+
+            orderItem.setOrder(savedOrder);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(quantity);
+            orderItem.setPrice(price);
+            orderItem.setGst_rate(gstRate);
+            orderItem.setGst_amount(gstAmount);
+            orderItem.setTotal_price(totalPrice);
+
+            oir.save(orderItem);
+
+            subTotal = subTotal.add(itemSubTotal);
+            totalGST = totalGST.add(gstAmount);
+        }
+
+        // subtotal + GST
+        BigDecimal orderTotal = subTotal.add(totalGST);
+
+        BigDecimal discount = BigDecimal.ZERO;
+
+        if (savedOrder.getCoupan() != null) {
+            discount = savedOrder.getCoupan().getDiscount_value();
+        }
+
+        BigDecimal finalAmount = orderTotal.subtract(discount);
+
+        savedOrder.setTotal_amt(orderTotal);
+        savedOrder.setDiscount_amt(discount);
+        savedOrder.setFinal_amt(finalAmount);
+
+        // clear cart
+        cir.deleteAll(cartItems);
+
+        return or.save(savedOrder);
+    }
+
+    // ===============================
+    // GET ALL ORDERS
+    // ===============================
+    public List<Order> getAllOrders() {
+        return or.findAll();
+    }
+
+    // ===============================
+    // GET ORDER BY ID
+    // ===============================
+    public Order getOrder(Integer id) {
+        return or.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    // ===============================
+    // GET ORDERS BY USER
+    // ===============================
+    public List<Order> getOrdersByUser(Integer userId) {
+        return or.findByUserId(userId);
+    }
+
+    // ===============================
+    // GET ORDER ITEMS
+    // ===============================
+    public List<Order_items> getOrderItemsByOrderId(Integer orderId) {
+        return oir.findByOrderId(orderId);
+    }
+
+    // ===============================
+    // UPDATE ORDER STATUS
+    // ===============================
+    public Order updateStatus(int id, String status) {
+
+        Order order = or.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        order.setOrder_status(status);
+
+        return or.save(order);
+    }
+
+    // ===============================
+    // TRACK ORDER
+    // ===============================
+    public String trackOrder(int orderId) {
+
+        Order order = or.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        return order.getOrder_status();
+    }
+
+    // ===============================
+    // CREATE ORDER MANUALLY
+    // ===============================
     public Order createOrder(Order order) {
 
         order.setCreated_at(new Timestamp(System.currentTimeMillis()));
@@ -62,87 +214,32 @@ public class OrderService {
         return or.save(order);
     }
 
-    // Get Order by ID
-    public Order getOrder(Integer id) {
-        return or.findById(id).orElse(null);
-    }
-
-    // Get All Orders
-    public List<Order> getAllOrders() {
-        return or.findAll();
-    }
-
-    // Get Orders by User
-    public List<Order> getOrdersByUser(Integer userId) {
-        return or.findByUserId(userId);
-    }
-
-    // Update Order
+    // ===============================
+    // UPDATE ORDER
+    // ===============================
     public Order updateOrder(Integer id, Order order) {
 
-        Order existing = or.findById(id).orElseThrow();
+        Order existingOrder = or.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        existing.setOrder_status(order.getOrder_status());
-        existing.setPayment_status(order.getPayment_status());
-        existing.setFinal_amt(order.getFinal_amt());
+        existingOrder.setOrder_status(order.getOrder_status());
+        existingOrder.setPayment_status(order.getPayment_status());
+        existingOrder.setFinal_amt(order.getFinal_amt());
+        existingOrder.setDiscount_amt(order.getDiscount_amt());
+        existingOrder.setTotal_amt(order.getTotal_amt());
 
-        return or.save(existing);
+        return or.save(existingOrder);
     }
 
-    // Delete Order
+    // ===============================
+    // DELETE ORDER
+    // ===============================
     public void deleteOrder(Integer id) {
-        or.deleteById(id);
-    }
 
-    // Place Order
-    public Order placeOrder(Integer userId) {
-
-        User user = ur.findById(userId).orElseThrow();
-
-        Order order = new Order();
-        order.setUser(user);
-
-        Address address = ar.findById(1).orElseThrow();
-        Coupan coupan = cr.findById(1).orElseThrow();
-        Delivary_Slot slot = dsr.findById(1).orElseThrow();
-
-        order.setAddress(address);
-        order.setCoupan(coupan);
-        order.setDelivary_slot(slot);
-
-        order.setOrder_status("PLACED");
-        order.setPayment_status("PENDING");
-
-        order.setTotal_amt(java.math.BigDecimal.ZERO);
-        order.setDiscount_amt(java.math.BigDecimal.ZERO);
-        order.setFinal_amt(java.math.BigDecimal.ZERO);
-
-        order.setCreated_at(new Timestamp(System.currentTimeMillis()));
-
-        return or.save(order);
-    }
-
-    // Get Order Items
-    public List<Order_items> getOrderItemsByOrderId(Integer orderId) {
-        return oir.findByOrderId(orderId);
-    }
-
-	public Order updateStatus(int id, String status) {
-		Optional<Order> optionalOrder = or.findById(id);
-
-        if (optionalOrder.isPresent()) {
-            Order order = optionalOrder.get();
-            order.setOrder_status(status);
-            return or.save(order);
-        } else {
-            throw new RuntimeException("Order not found with id: " + id);
+        if (!or.existsById(id)) {
+            throw new RuntimeException("Order not found");
         }
-	}
-	
-	public String trackOrder(int orderId) {
 
-        Order order = or.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-
-        return order.getOrder_status();
+        or.deleteById(id);
     }
 }

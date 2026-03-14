@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -15,10 +17,12 @@ public class Category {
     private int id;
 
     private String name;
-
     private String description;
+    private String img_url;
 
-    private String imgUrl;
+    @ManyToOne
+    @JoinColumn(name = "hsn_code")
+    private HsnMaster hsn;
 
     public Category() {}
 
@@ -26,7 +30,7 @@ public class Category {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.imgUrl = imgUrl;
+        this.img_url = img_url;
     }
 
     // Getters and Setters
@@ -40,11 +44,21 @@ public class Category {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getImgUrl() { return imgUrl; }
-    public void setImgUrl(String imgUrl) { this.imgUrl = imgUrl; }
+    public String getImgUrl() { 
+    	return img_url; 
+    	}
+    public void setImgUrl(String imgUrl) { this.img_url = imgUrl; }
+    
+    public HsnMaster getHsn() {
+        return hsn;
+    }
+
+    public void setHsn(HsnMaster hsn) {
+        this.hsn = hsn;
+    }
 
     @Override
     public String toString() {
-        return "Category [id=" + id + ", name=" + name + ", description=" + description + ", imgUrl=" + imgUrl + "]";
+        return "Category [id=" + id + ", name=" + name + ", description=" + description + ", imgUrl=" + img_url + "]";
     }
 }

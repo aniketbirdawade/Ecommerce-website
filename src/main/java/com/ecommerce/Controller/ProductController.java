@@ -33,7 +33,7 @@ public class ProductController
 		return ps.addProduct(product);
 		 
 	}
-	
+	 
 	 @GetMapping("get-all-product")
 	 public List<Product> getAllProducts() 
 	 {

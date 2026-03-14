@@ -9,4 +9,6 @@ import com.ecommerce.Entity.Cart_item;
 public interface CartItemRepository extends JpaRepository<Cart_item, Integer>{
 
 	List<Cart_item> findByCart_Id(int cartId);
+
+	List<Cart_item> findByCartUserId(Integer userId);
 }

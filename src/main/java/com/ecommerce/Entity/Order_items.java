@@ -2,94 +2,69 @@ package com.ecommerce.Entity;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "order_items")
-public class Order_items 
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	
-	@ManyToOne
-	@JoinColumn(name = "order_id", nullable = false)
-	private Order order;
-	
-	@ManyToOne
-	@JoinColumn(name = "product_id", nullable = false)
-	private Product product;
-	
-	private int quantity;
-	
-	@Column(precision = 10, scale = 2)
-	private BigDecimal purchase_price;
+public class Order_items {
 
-	public Order_items() {
-		super();
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	public Order_items(int id, Order order, Product product, int quantity, BigDecimal purchase_price) {
-		super();
-		this.id = id;
-		this.order = order;
-		this.product = product;
-		this.quantity = quantity;
-		this.purchase_price = purchase_price;
-	}
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-	public int getId() {
-		return id;
-	}
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    private int quantity;
 
-	public Order getOrder() {
-		return order;
-	}
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
 
-	public void setOrder(Order order) {
-		this.order = order;
-	}
+    @Column(precision = 10, scale = 2)
+    private BigDecimal gst_rate;
 
-	public Product getProduct() {
-		return product;
-	}
+    @Column(precision = 10, scale = 2)
+    private BigDecimal gst_amount;
 
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+    @Column(precision = 10, scale = 2)
+    private BigDecimal total_price;
 
-	public int getQuantity() {
-		return quantity;
-	}
+    public Order_items() {}
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+    public int getId() { return id; }
 
-	public BigDecimal getPurchase_price() {
-		return purchase_price;
-	}
+    public void setId(int id) { this.id = id; }
 
-	public void setPurchase_price(BigDecimal purchase_price) {
-		this.purchase_price = purchase_price;
-	}
+    public Order getOrder() { return order; }
 
-	@Override
-	public String toString() {
-		return "Order_items [id=" + id + ", order=" + order + ", product=" + product + ", quantity=" + quantity
-				+ ", purchase_price=" + purchase_price + "]";
-	}
-	
-	
+    public void setOrder(Order order) { this.order = order; }
+
+    public Product getProduct() { return product; }
+
+    public void setProduct(Product product) { this.product = product; }
+
+    public int getQuantity() { return quantity; }
+
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public BigDecimal getPrice() { return price; }
+
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public BigDecimal getGst_rate() { return gst_rate; }
+
+    public void setGst_rate(BigDecimal gst_rate) { this.gst_rate = gst_rate; }
+
+    public BigDecimal getGst_amount() { return gst_amount; }
+
+    public void setGst_amount(BigDecimal gst_amount) { this.gst_amount = gst_amount; }
+
+    public BigDecimal getTotal_price() { return total_price; }
+
+    public void setTotal_price(BigDecimal total_price) { this.total_price = total_price; }
 }

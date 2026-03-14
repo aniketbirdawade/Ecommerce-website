@@ -31,7 +31,7 @@ public class OrderItemService {
 
         item.setOrder(order);
         item.setProduct(product);
-        item.setPurchase_price(product.getPrice().multiply(new BigDecimal(item.getQuantity())));
+        item.setTotal_price(product.getPrice().multiply(new BigDecimal(item.getQuantity())));
 
         return oir.save(item);
     }
