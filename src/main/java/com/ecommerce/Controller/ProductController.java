@@ -17,6 +17,8 @@ public class ProductController {
         this.productRepository = productRepository;
         this.reviewController = reviewController;
     }
+    
+    
  
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
@@ -50,13 +52,19 @@ public class ProductController {
     }
  
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable int id, @RequestBody Product updated) {
+    public Product updateProduct(@PathVariable int id,
+                                 @RequestBody Product updated) {
+
         Product product = productRepository.findById(id).orElse(null);
-        if (product == null) return null;
+
+        if (product == null) {
+            return null;
+        }
+
         product.setName(updated.getName());
         product.setPrice(updated.getPrice());
         product.setCategory(updated.getCategory());
-        product.setHsn(updated.getHsn());
+
         return productRepository.save(product);
     }
  

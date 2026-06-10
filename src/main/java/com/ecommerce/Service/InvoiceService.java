@@ -24,18 +24,15 @@ import com.itextpdf.layout.properties.TextAlignment;
 @Service
 public class InvoiceService {
 
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final HsnRepository hsnRepository;
+	private final OrderRepository orderRepository;
+	private final OrderItemRepository orderItemRepository;
 
-    public InvoiceService(OrderRepository orderRepository,
-                          OrderItemRepository orderItemRepository,
-                          HsnRepository hsnRepository) {
+	public InvoiceService(OrderRepository orderRepository,
+	                      OrderItemRepository orderItemRepository) {
 
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.hsnRepository = hsnRepository;
-    }
+	    this.orderRepository = orderRepository;
+	    this.orderItemRepository = orderItemRepository;
+	}
 
     public byte[] generateInvoice(int orderId) {
 
@@ -125,9 +122,15 @@ public class InvoiceService {
 
                 String productName = item.getProduct().getName();
 
-                hsndata hsn = item.getProduct().getHsn();
+                hsndata hsn =
+                        item.getProduct()
+                            .getCategory()
+                            .getHsn();
+
                 String hsnCode = hsn.getHsn_code();
-                BigDecimal gstRate = BigDecimal.valueOf(hsn.getGst_rate());
+
+                BigDecimal gstRate =
+                        BigDecimal.valueOf(hsn.getGst_rate());
 
                 BigDecimal price = item.getPrice();
                 int qty = item.getQuantity();
@@ -154,9 +157,9 @@ public class InvoiceService {
                 }
 
                 // GST
-                BigDecimal gstAmount = taxable
-                        .multiply(gstRate)
-                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                BigDecimal gstAmount =
+                        taxable.multiply(gstRate)
+                               .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
                 BigDecimal rowTotal = taxable.add(gstAmount);
 

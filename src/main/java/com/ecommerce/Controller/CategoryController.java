@@ -43,7 +43,7 @@ public class CategoryController {
         if (category == null) return null;
         category.setName(updated.getName());
         category.setDescription(updated.getDescription());
-        category.setImgUrl(updated.getImgUrl());
+        category.setImg_url(updated.getImg_url());
         if (updated.getHsn() != null) {
             category.setHsn(updated.getHsn());
         }

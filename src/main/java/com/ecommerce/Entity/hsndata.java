@@ -1,14 +1,10 @@
 package com.ecommerce.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "hsndata")
-public class hsndata 
-{
+public class hsndata {
 
     @Id
     private String hsn_code;
@@ -21,14 +17,15 @@ public class hsndata
     public hsndata() {
     }
 
-    public hsndata(String hsn_code, String description, Double gst_rate) {
-		super();
-		this.hsn_code = hsn_code;
-		this.description = description;
-		this.gst_rate = gst_rate;
-	}
+    public hsndata(String hsn_code,
+                   String description,
+                   Double gst_rate) {
+        this.hsn_code = hsn_code;
+        this.description = description;
+        this.gst_rate = gst_rate;
+    }
 
-	public String getHsn_code() {
+    public String getHsn_code() {
         return hsn_code;
     }
 
@@ -51,11 +48,4 @@ public class hsndata
     public void setGst_rate(Double gst_rate) {
         this.gst_rate = gst_rate;
     }
-
-	@Override
-	public String toString() {
-		return "HsnMaster [hsn_code=" + hsn_code + ", description=" + description + ", gst_rate=" + gst_rate + "]";
-	}
-   
-    
 }
