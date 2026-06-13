@@ -3,7 +3,7 @@ package com.ecommerce.Controller;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
-import com.ecommerce.Entity.Order_items;
+import com.ecommerce.Entity.OrderItem;
 import com.ecommerce.Repository.OrderItemRepository;
  
 @RestController
@@ -17,30 +17,30 @@ public class OrderItemController {
     }
  
     @PostMapping
-    public Order_items addOrderItem(@RequestBody Order_items orderItem) {
-        Order_items saved = orderItemRepository.save(orderItem);
+    public OrderItem addOrderItem(@RequestBody OrderItem orderItem) {
+        OrderItem saved = orderItemRepository.save(orderItem);
         return orderItemRepository.findById(saved.getId()).orElse(saved);
     }
  
     @GetMapping
-    public List<Order_items> getAllOrderItems() {
+    public List<OrderItem> getAllOrderItems() {
         return orderItemRepository.findAll();
     }
  
     @GetMapping("/{id}")
-    public Order_items getOrderItemById(@PathVariable int id) {
+    public OrderItem getOrderItemById(@PathVariable int id) {
         return orderItemRepository.findById(id).orElse(null);
     }
  
     // GET items by order
     @GetMapping("/order/{orderId}")
-    public List<Order_items> getItemsByOrder(@PathVariable int orderId) {
+    public List<OrderItem> getItemsByOrder(@PathVariable int orderId) {
         return orderItemRepository.findByOrderId(orderId);
     }
  
     @PutMapping("/{id}")
-    public Order_items updateOrderItem(@PathVariable int id, @RequestBody Order_items updated) {
-        Order_items item = orderItemRepository.findById(id).orElse(null);
+    public OrderItem updateOrderItem(@PathVariable int id, @RequestBody OrderItem updated) {
+        OrderItem item = orderItemRepository.findById(id).orElse(null);
         if (item == null) return null;
         item.setQuantity(updated.getQuantity());
         item.setPrice(updated.getPrice());
@@ -54,10 +54,10 @@ public class OrderItemController {
     }
     
     @PatchMapping("/{id}/discount")
-    public Order_items updateItemDiscount(@PathVariable int id,
+    public OrderItem updateItemDiscount(@PathVariable int id,
                                           @RequestParam BigDecimal amount) {
 
-        Order_items item = orderItemRepository.findById(id).orElse(null);
+        OrderItem item = orderItemRepository.findById(id).orElse(null);
         if (item == null) return null;
 
         // set discount

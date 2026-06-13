@@ -64,6 +64,10 @@ public class ProductController {
         product.setName(updated.getName());
         product.setPrice(updated.getPrice());
         product.setCategory(updated.getCategory());
+        
+        // NEW: Map stock and availability using the exact entity getters/setters
+        product.setStock_quantity(updated.getStock_quantity());
+        product.setIs_avaliable(updated.isIs_avaliable());
 
         return productRepository.save(product);
     }

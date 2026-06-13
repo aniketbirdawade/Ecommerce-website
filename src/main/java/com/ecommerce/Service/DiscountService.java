@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import org.springframework.stereotype.Service;
 import com.ecommerce.Entity.DiscountType;
 import com.ecommerce.Entity.Order;
-import com.ecommerce.Entity.Order_items;
+import com.ecommerce.Entity.OrderItem;
 import com.ecommerce.Repository.OrderItemRepository;
 import com.ecommerce.Repository.OrderRepository;
 

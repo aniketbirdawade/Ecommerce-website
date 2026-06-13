@@ -32,11 +32,11 @@ public class Order
 	
 	@ManyToOne
 	@JoinColumn(name = "coupan_id")
-	private Coupan coupan;
+	private Coupon coupon;
 	
 	@ManyToOne
 	@JoinColumn(name = "delivary_slot_id", nullable = false)
-	private Delivary_Slot delivary_slot;
+	private DeliverySlot deliverySlot;
 	
 	@Column(precision = 10, scale = 2)
 	private BigDecimal total_amt;
@@ -57,15 +57,15 @@ public class Order
 	public Order() {
 		super();
 	}
-	public Order(int id, User user, Address address, Coupan coupan, Delivary_Slot delivary_slot, BigDecimal total_amt,
+	public Order(int id, User user, Address address, Coupon coupon, DeliverySlot deliverySlot, BigDecimal total_amt,
 			BigDecimal discount_amt, BigDecimal final_amt, String order_status, String payment_status,
 			Timestamp created_at) {
 		super();
 		this.id = id;
 		this.user = user;
 		this.address = address;
-		this.coupan = coupan;
-		this.delivary_slot = delivary_slot;
+		this.coupon = coupon;
+		this.deliverySlot = deliverySlot;
 		this.total_amt = total_amt;
 		this.discount_amt = discount_amt;
 		this.final_amt = final_amt;
@@ -91,17 +91,17 @@ public class Order
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	public Coupan getCoupan() {
-		return coupan;
+	public Coupon getCoupon() {
+		return coupon;
 	}
-	public void setCoupan(Coupan coupan) {
-		this.coupan = coupan;
+	public void setCoupon(Coupon coupon) {
+		this.coupon = coupon;
 	}
-	public Delivary_Slot getDelivary_slot() {
-		return delivary_slot;
+	public DeliverySlot getDeliverySlot() {
+		return deliverySlot;
 	}
-	public void setDelivary_slot(Delivary_Slot delivary_slot) {
-		this.delivary_slot = delivary_slot;
+	public void setDeliverySlot(DeliverySlot deliverySlot) {
+		this.deliverySlot = deliverySlot;
 	}
 	public BigDecimal getTotal_amt() {
 		return total_amt;
@@ -141,8 +141,8 @@ public class Order
 	}
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", user=" + user + ", address=" + address + ", coupan=" + coupan + ", delivary_slot="
-				+ delivary_slot + ", total_amt=" + total_amt + ", discount_amt=" + discount_amt + ", final_amt="
+		return "Order [id=" + id + ", user=" + user + ", address=" + address + ", coupon=" + coupon + ", deliverySlot="
+				+ deliverySlot + ", total_amt=" + total_amt + ", discount_amt=" + discount_amt + ", final_amt="
 				+ final_amt + ", order_status=" + order_status + ", payment_status=" + payment_status + ", created_at="
 				+ created_at + "]";
 	}

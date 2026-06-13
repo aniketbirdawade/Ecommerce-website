@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ecommerce.Entity.hsndata;
+import com.ecommerce.Entity.HsnData;
 import com.ecommerce.Service.HsnImportService;
 
 @RestController
 @RequestMapping("/api/hsn")
 public class HsnController {
 
-    private final com.ecommerce.Service.HsnImportService hsnImportService;
+    private final HsnImportService hsnImportService;
 
     public HsnController(HsnImportService hsnImportService) {
         this.hsnImportService = hsnImportService;
@@ -33,7 +33,7 @@ public class HsnController {
     }
     
     @GetMapping("get-hsn")
-    public List<hsndata> getAllHsn() {
+    public List<HsnData> getAllHsn() {
         return hsnImportService.getAllHsn();
     }
 }

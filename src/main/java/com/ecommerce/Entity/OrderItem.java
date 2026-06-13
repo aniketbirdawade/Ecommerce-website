@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "order_items")
-public class Order_items {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Order_items {
     @Column(precision = 10, scale = 2)
     private BigDecimal final_price = BigDecimal.ZERO;
 
-    public Order_items() {
+    public OrderItem() {
     }
 
     public int getId() {

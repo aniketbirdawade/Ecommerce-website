@@ -69,4 +69,22 @@ public class Product {
     public void setCategory(Category category) {
         this.category = category;
     }
+    
+ // ... your existing getters and setters ...
+
+    public int getStock_quantity() {
+        return stock_quantity;
+    }
+
+    public void setStock_quantity(int stock_quantity) {
+        this.stock_quantity = stock_quantity;
+    }
+
+    public boolean isIs_avaliable() {
+        return is_avaliable;
+    }
+
+    public void setIs_avaliable(boolean is_avaliable) {
+        this.is_avaliable = is_avaliable;
+    }
 }

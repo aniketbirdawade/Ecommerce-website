@@ -2,38 +2,38 @@ package com.ecommerce.Controller;
  
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
-import com.ecommerce.Entity.Coupan;
-import com.ecommerce.Repository.CoupanRepository;
+import com.ecommerce.Entity.Coupon;
+import com.ecommerce.Repository.CouponRepository;
  
 @RestController
 @RequestMapping("/api/coupons")
 public class CouponController {
  
-    private final CoupanRepository coupanRepository;
+    private final CouponRepository coupanRepository;
  
-    public CouponController(CoupanRepository coupanRepository) {
+    public CouponController(CouponRepository coupanRepository) {
         this.coupanRepository = coupanRepository;
     }
  
     @PostMapping
-    public Coupan addCoupon(@RequestBody Coupan coupan) {
-        Coupan saved = coupanRepository.save(coupan);
+    public Coupon addCoupon(@RequestBody Coupon coupan) {
+        Coupon saved = coupanRepository.save(coupan);
         return coupanRepository.findById(saved.getId()).orElse(saved);
     }
  
     @GetMapping
-    public List<Coupan> getAllCoupons() {
+    public List<Coupon> getAllCoupons() {
         return coupanRepository.findAll();
     }
  
     @GetMapping("/{id}")
-    public Coupan getCouponById(@PathVariable int id) {
+    public Coupon getCouponById(@PathVariable int id) {
         return coupanRepository.findById(id).orElse(null);
     }
  
     @PutMapping("/{id}")
-    public Coupan updateCoupon(@PathVariable int id, @RequestBody Coupan updated) {
-        Coupan coupan = coupanRepository.findById(id).orElse(null);
+    public Coupon updateCoupon(@PathVariable int id, @RequestBody Coupon updated) {
+        Coupon coupan = coupanRepository.findById(id).orElse(null);
         if (coupan == null) return null;
         coupan.setCode(updated.getCode());
         coupan.setDiscount_type(updated.getDiscount_type());

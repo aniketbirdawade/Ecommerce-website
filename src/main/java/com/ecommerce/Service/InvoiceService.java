@@ -8,10 +8,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.Entity.Address;
-import com.ecommerce.Entity.hsndata;
+import com.ecommerce.Entity.HsnData;
 import com.ecommerce.Entity.Order;
-import com.ecommerce.Entity.Order_items;
-import com.ecommerce.Repository.HsnRepository;
+import com.ecommerce.Entity.OrderItem;
 import com.ecommerce.Repository.OrderItemRepository;
 import com.ecommerce.Repository.OrderRepository;
 
@@ -41,7 +40,7 @@ public class InvoiceService {
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new RuntimeException("Order not found"));
 
-            List<Order_items> items = orderItemRepository.findByOrderId(orderId);
+            List<OrderItem> items = orderItemRepository.findByOrderId(orderId);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             PdfWriter writer = new PdfWriter(out);
@@ -87,7 +86,7 @@ public class InvoiceService {
             // ======================
             BigDecimal subtotal = BigDecimal.ZERO;
 
-            for (Order_items item : items) {
+            for (OrderItem item : items) {
                 subtotal = subtotal.add(
                         item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
                 );
@@ -118,11 +117,11 @@ public class InvoiceService {
             BigDecimal totalGST = BigDecimal.ZERO;
             BigDecimal totalDiscount = BigDecimal.ZERO;
 
-            for (Order_items item : items) {
+            for (OrderItem item : items) {
 
                 String productName = item.getProduct().getName();
 
-                hsndata hsn =
+                HsnData hsn =
                         item.getProduct()
                             .getCategory()
                             .getHsn();

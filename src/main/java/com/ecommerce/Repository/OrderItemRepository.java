@@ -2,8 +2,8 @@ package com.ecommerce.Repository;
  
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.ecommerce.Entity.Order_items;
- 
-public interface OrderItemRepository extends JpaRepository<Order_items, Integer> {
-    List<Order_items> findByOrderId(int orderId);
+import com.ecommerce.Entity.OrderItem;
+
+public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
+    List<OrderItem> findByOrderId(int orderId);
 }

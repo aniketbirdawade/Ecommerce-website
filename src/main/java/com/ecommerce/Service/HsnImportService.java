@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.ecommerce.Entity.hsndata;
+import com.ecommerce.Entity.HsnData;
 import com.ecommerce.Repository.HsnDataRepository;
 
 @Service
@@ -43,7 +43,7 @@ public class HsnImportService {
 
             double gstRate = getGstRate(hsnCode);
 
-            hsndata hsn = new hsndata();
+            HsnData hsn = new HsnData();
             hsn.setHsn_code(hsnCode);
             hsn.setDescription(description);
             hsn.setGst_rate(gstRate);
@@ -92,7 +92,7 @@ public class HsnImportService {
         }
     }
 
-    public List<hsndata> getAllHsn() {
+    public List<HsnData> getAllHsn() {
         return repo.findAll();
     }
 }

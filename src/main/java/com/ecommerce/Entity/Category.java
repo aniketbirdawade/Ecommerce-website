@@ -16,13 +16,13 @@ public class Category {
 
     @ManyToOne
     @JoinColumn(name = "hsn_code")
-    private hsndata hsn;
+    private HsnData hsn;
 
     public Category() {
     }
 
     public Category(int id, String name, String description,
-                    String img_url, hsndata hsn) {
+                    String img_url, HsnData hsn) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -62,11 +62,11 @@ public class Category {
         this.img_url = img_url;
     }
 
-    public hsndata getHsn() {
+    public HsnData getHsn() {
         return hsn;
     }
 
-    public void setHsn(hsndata hsn) {
+    public void setHsn(HsnData hsn) {
         this.hsn = hsn;
     }
 }

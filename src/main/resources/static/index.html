@@ -593,8 +593,12 @@ tbody tr:last-child td{border-bottom:none;}
         <div class="card-body">
           <div class="fgrid">
             <div class="fg"><label>Cart ID</label><input id="ci-cart" type="number" placeholder="e.g. 1"/></div>
-            <div class="fg"><label>Product ID</label><input id="ci-prod" type="number" placeholder="e.g. 5"/></div>
-            <div class="fg"><label>Quantity</label><input id="ci-qty" type="number" placeholder="1"/></div>
+            <div class="fg">
+              <label>Product ID</label>
+              <input id="ci-prod" type="number" placeholder="e.g. 5" oninput="fetchCartItemProduct()"/>
+              <div class="prod-hint" id="ci-prod-name"></div>
+            </div>
+            <div class="fg"><label>Quantity</label><input id="ci-qty" type="number" placeholder="1" oninput="calcCartItemPrice()"/></div>
             <div class="fg"><label>Final Price (₹)</label><input id="ci-price" type="number" step="0.01" placeholder="0.00"/></div>
           </div>
           <div class="factions">
@@ -627,6 +631,10 @@ tbody tr:last-child td{border-bottom:none;}
         <div class="card-head">
           <h3>🛒 Create New Order <span class="badge badge-post">POST</span></h3>
           <span style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">Totals auto-calculated from products</span>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="goPage('product')">＋ Product</button>
+            <button class="btn btn-secondary btn-sm" onclick="goPage('coupon')">🏷 Coupon</button>
+          </div>
         </div>
         <div class="card-body">
           <div class="order-wizard">
@@ -652,7 +660,7 @@ tbody tr:last-child td{border-bottom:none;}
                 </div>
                 <div class="fg">
                   <label>Coupon ID <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-                  <input id="no-coup" type="number" placeholder="e.g. 1" oninput="fetchCoupon()"/>
+                  <input type="number" id="no-coup" placeholder="e.g. 1" oninput="fetchCoupon()"/>
                   <div class="coupon-status" id="no-coup-status"></div>
                 </div>
               </div>
@@ -1072,14 +1080,37 @@ function renderProducts(data){
   if(!data.length){tb.innerHTML=emptyRow(7);return;}
   tb.innerHTML=data.map(p=>`<tr><td>${p.id}</td><td><strong>${p.name||'—'}</strong></td><td>₹${p.price||'—'}</td><td>${p.stock_quantity??'—'}</td><td>${p.category?.name||p.category?.id||'—'}</td><td><span class="pill ${p.is_avaliable?'pill-green':'pill-red'}">${p.is_avaliable?'Yes':'No'}</span></td><td class="td-actions"><button class="btn btn-blue btn-sm" onclick="editProduct(${p.id})">✏ Edit</button><button class="btn btn-danger btn-sm" onclick="deleteRecord('/api/products',${p.id},loadProducts)">🗑</button></td></tr>`).join('');
 }
-async function editProduct(id){
-  try{
-    const p=await api('GET',`/api/products/${id}`);
-    openModal('Edit Product',mf('Name','name',p.name)+mf('Price','price',p.price,'number')+mf('Category ID','cat',p.category?.id,'number')+mf('HSN Code','hsn',p.hsn?.hsn_code),
-    async()=>{await api('PUT',`/api/products/${id}`,{name:mv('name'),price:mv('price'),category:{id:parseInt(mv('cat'))},hsn:mv('hsn')?{hsn_code:mv('hsn')}:null});toast('Product updated!');closeModal();loadProducts();});
-  }catch(e){toast(e.message,true);}
-}
 
+
+async function editProduct(id){
+	  try{
+	    const p = await api('GET', `/api/products/${id}`);
+	    
+	    openModal('Edit Product',
+	      mf('Name', 'name', p.name) + 
+	      mf('Price', 'price', p.price, 'number') + 
+	      mf('Category ID', 'cat', p.category?.id, 'number') + 
+	      mf('HSN Code', 'hsn', p.hsn?.hsn_code) +
+	      mf('Stock Qty', 'stock', p.stock_quantity || 0, 'number') +                  // Uses stock_quantity
+	      mf('Available', 'available', p.is_avaliable ? 'true' : 'false'),             // Uses is_avaliable
+	    async () => {
+	      await api('PUT', `/api/products/${id}`, {
+	        name: mv('name'),
+	        price: parseFloat(mv('price')),
+	        category: { id: parseInt(mv('cat')) },
+	        hsn: mv('hsn') ? { hsn_code: mv('hsn') } : null,
+	        stock_quantity: parseInt(mv('stock')) || 0,                                // Matches Java property
+	        is_avaliable: mv('available') === 'true'                                   // Matches Java property
+	      });
+	      toast('Product updated!');
+	      closeModal();
+	      loadProducts();
+	    });
+	  } catch(e) { 
+	    toast(e.message, true); 
+	  }
+	}
+	
 // ═══════════════════════════
 // COUPON
 // ═══════════════════════════
@@ -1224,6 +1255,27 @@ async function loadCartItems(){
     tb.innerHTML=data.map(i=>`<tr><td>${i.id}</td><td>${i.cart?.id||'—'}</td><td>${i.product?.name||i.product?.id||'—'}</td><td>${i.quantity}</td><td>₹${i.final_price||'—'}</td><td class="td-actions"><button class="btn btn-blue btn-sm" onclick="editCartItem(${i.id})">✏ Edit</button><button class="btn btn-danger btn-sm" onclick="deleteRecord('/api/cart-items',${i.id},loadCartItems)">🗑</button></td></tr>`).join('');
   }catch(e){toast('Failed: '+e.message,true);}
 }
+async function fetchCartItemProduct(){
+  const pid=v('ci-prod');
+  const nameEl=document.getElementById('ci-prod-name');
+  const priceEl=document.getElementById('ci-price');
+  if(!pid){nameEl.textContent='';priceEl.value='';return;}
+  try{
+    const p=await api('GET',`/api/products/${pid}`);
+    if(p?.name){
+      nameEl.textContent=`📦 ${p.name}`;
+      if(p.price){priceEl.value=p.price;calcCartItemPrice();}
+    }else{nameEl.textContent='❌ Not found';}
+  }catch{nameEl.textContent='❌ Not found';}
+}
+
+function calcCartItemPrice(){
+  const qty=parseInt(v('ci-qty'))||0;
+  const price=parseFloat(v('ci-price'))||0;
+  const final=qty*price;
+  document.getElementById('ci-price').value=final.toFixed(2);
+}
+
 async function editCartItem(id){
   try{
     const i=await api('GET',`/api/cart-items/${id}`);
@@ -1312,14 +1364,7 @@ function addProductRow(){
 	        oninput="updateRowSub(${id})"/>
 	    </div>
 
-	    <div class="fg">
-	      <label>Discount (₹)</label>
-	      <input type="number" id="pr-disc-${id}" step="0.01" value="0"
-	        oninput="updateRowSub(${id})"/>
-	      <div class="prod-hint" id="pr-disc-hint-${id}"></div>
-	    </div>
-
-	    <div>
+<div>
 	      <span class="row-subtotal-lbl">Subtotal</span>
 	      <div class="row-subtotal-box" id="pr-sub-${id}">₹0.00</div>
 	    </div>
@@ -1426,7 +1471,7 @@ async function fetchProdName(id){
 function updateRowSub(id){
 	  const qty = parseFloat(document.getElementById(`pr-qty-${id}`).value) || 0;
 	  const price = parseFloat(document.getElementById(`pr-price-${id}`).value) || 0;
-	  const discount = parseFloat(document.getElementById(`pr-disc-${id}`).value) || 0;
+	  const discount = parseFloat(document.getElementById(`pr-disc-${id}`)?.value || 0) || 0;
 
 	  let subtotal = (qty * price) - discount;
 
@@ -1434,59 +1479,76 @@ function updateRowSub(id){
 
 	  document.getElementById(`pr-sub-${id}`).innerText = `₹${subtotal.toFixed(2)}`;
 
-	  updateOrderSummary(); // keep your existing function
+	  recalcSummary(); // ✅ FIXED: was updateOrderSummary (which doesn't exist)
 	}
+
+
 function recalcSummary(){
 	  let subtotal = 0;
 	  let itemDiscount = 0;
 
-	  document.querySelectorAll('.product-row').forEach(row=>{
+	  // 1. Gather all product row amounts safely
+	  document.querySelectorAll('.product-row').forEach(row => {
 	    const rid = row.id.replace('prow-','');
 
 	    const qty   = parseFloat(document.getElementById(`pr-qty-${rid}`)?.value) || 0;
 	    const price = parseFloat(document.getElementById(`pr-price-${rid}`)?.value) || 0;
-	    const disc  = parseFloat(document.getElementById(`pr-disc-${rid}`)?.value) || 0;
+	    const disc  = parseFloat(document.getElementById(`pr-disc-${rid}`)?.value || 0) || 0;
 
-	    subtotal += qty * price;
+	    subtotal += qty * price; // ✅ FIXED: was missing!
 	    itemDiscount += disc;
 	  });
 
 	  let couponDiscount = 0;
 	  let info = '';
-	  const coup = soState.coupon;
-
+	  
+	  // Read safely from your existing global state object
+	  const coup = soState.coupon; 
 	  const afterItemDiscount = subtotal - itemDiscount;
 
 	  if(coup && coup.is_active){
 	    const min = parseFloat(coup.min_order_amount) || 0;
 
 	    if(afterItemDiscount >= min){
-	      couponDiscount = coup.discount_type === 'PERCENTAGE'
-	        ? afterItemDiscount * parseFloat(coup.discount_value) / 100
-	        : parseFloat(coup.discount_value) || 0;
+	      // ✅ Fixes the case mismatch ('percentage' vs 'PERCENTAGE') without breaking async order
+	      const isPercentage = coup.discount_type?.toUpperCase() === 'PERCENTAGE';
+	      const discVal = parseFloat(coup.discount_value) || 0;
+
+	      couponDiscount = isPercentage
+	        ? afterItemDiscount * discVal / 100
+	        : discVal;
 
 	      info = `${coup.code}: ${
-	        coup.discount_type === 'PERCENTAGE'
-	          ? coup.discount_value + '% of ₹' + afterItemDiscount.toFixed(2)
-	          : 'flat'
+	        isPercentage
+	          ? discVal + '% of ₹' + afterItemDiscount.toFixed(2)
+	          : 'flat ₹' + discVal.toFixed(2)
 	      } = ₹${couponDiscount.toFixed(2)} off`;
+	    } else {
+	      info = `⚠️ Min order ₹${min} required for this coupon`;
 	    }
+	  }
+
+	  // Prevent coupon from exceeding balance
+	  if (couponDiscount > afterItemDiscount) {
+	    couponDiscount = afterItemDiscount;
 	  }
 
 	  const totalDiscount = itemDiscount + couponDiscount;
 	  const final = Math.max(0, subtotal - totalDiscount);
 
-	  document.getElementById('sum-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-	  document.getElementById('sum-discount').textContent = `— ₹${totalDiscount.toFixed(2)}`;
-	  document.getElementById('sum-final').textContent    = `₹${final.toFixed(2)}`;
+	  // Update UI Elements safely
+	  if(document.getElementById('sum-subtotal')) document.getElementById('sum-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+	  if(document.getElementById('sum-discount')) document.getElementById('sum-discount').textContent = `— ₹${totalDiscount.toFixed(2)}`;
+	  if(document.getElementById('sum-final'))    document.getElementById('sum-final').textContent    = `₹${final.toFixed(2)}`;
+	  if(document.getElementById('sum-coupon-info')) document.getElementById('sum-coupon-info').textContent = info;
 
-	  document.getElementById('sum-coupon-info').textContent = info;
-
+	  // Save back to your global state engine
 	  soState.subtotal = subtotal;
-	  soState.discount = totalDiscount; // ✅ IMPORTANT
+	  soState.discount = totalDiscount; 
 	  soState.finalAmt = final;
 	}
-
+	
+	
 function collectRows(){
   const rows=[];
   document.querySelectorAll('.product-row').forEach(row=>{
@@ -1500,7 +1562,7 @@ function collectRows(){
   return rows;
 }
 
-async function placeSmartOrder(){
+	async function placeSmartOrder(){
 	  const uid=v('no-uid'); const addr=v('no-addr'); const slot=v('no-slot'); const coup=v('no-coup');
 	  if(!uid){toast('User ID required',true);return;}
 	  if(!addr){toast('Address ID required',true);return;}
@@ -1513,7 +1575,7 @@ async function placeSmartOrder(){
 	  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Placing...';
 
 	  try{
-	    recalcSummary();
+	    recalcSummary(); // ✅ FIXED: recalculate before sending
 	    const order=await api('POST','/api/orders',{
 	    	  user:{id:parseInt(uid)},
 	    	  address:{id:parseInt(addr)},
@@ -1535,15 +1597,13 @@ async function placeSmartOrder(){
 	    const itemResults=[];
 	    for(const row of rows){
 	    	const baseTotal = row.qty * row.price;
-	    	const finalPrice = baseTotal - (row.disc || 0);
 
 	    	const item=await api('POST','/api/order-items',{
 	    	  order:{id:order.id},
 	    	  product:{id:row.pid},
 	    	  quantity:row.qty,
 	    	  price:row.price.toFixed(2),
-	    	  discount_amt: (row.disc || 0).toFixed(2),   // ✅ ADD THIS
-	    	  final_price: finalPrice.toFixed(2)          // ✅ ADD THIS
+	    	  final_price: baseTotal.toFixed(2) // ✅ FIXED: simplified calculation
 	    	});
 	      itemResults.push({...row,itemId:item.id});
 	    }

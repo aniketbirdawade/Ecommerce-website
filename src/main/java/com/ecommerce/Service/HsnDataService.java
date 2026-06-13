@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ecommerce.Entity.hsndata;
+import com.ecommerce.Entity.HsnData;
 import com.ecommerce.Repository.HsnDataRepository;
 
 @Service
@@ -16,11 +16,11 @@ public class HsnDataService {
         this.repo = repo;
     }
 
-    public List<hsndata> getAllHsn() {
+    public List<HsnData> getAllHsn() {
         return repo.findAll();
     }
 
-    public hsndata saveHsn(hsndata hsn) {
+    public HsnData saveHsn(HsnData hsn) {
         return repo.save(hsn);
     }
 }

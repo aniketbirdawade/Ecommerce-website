@@ -1,28 +1,43 @@
 package com.ecommerce.Entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "hsndata")
-public class hsndata {
+@Table(name = "hsn_data")
+public class HsnData {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "hsn_code", nullable = false, length = 20, unique = true)
     private String hsn_code;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    private Double gst_rate;
+    @Column(name = "gst_rate")
+    private double gst_rate;
 
-    public hsndata() {
+    public HsnData() {
     }
 
-    public hsndata(String hsn_code,
-                   String description,
-                   Double gst_rate) {
+    public HsnData(String hsn_code, String description, double gst_rate) {
         this.hsn_code = hsn_code;
         this.description = description;
         this.gst_rate = gst_rate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getHsn_code() {
@@ -41,11 +56,16 @@ public class hsndata {
         this.description = description;
     }
 
-    public Double getGst_rate() {
+    public double getGst_rate() {
         return gst_rate;
     }
 
-    public void setGst_rate(Double gst_rate) {
+    public void setGst_rate(double gst_rate) {
         this.gst_rate = gst_rate;
+    }
+
+    @Override
+    public String toString() {
+        return "HsnData [hsn_code=" + hsn_code + ", description=" + description + ", gst_rate=" + gst_rate + "]";
     }
 }
