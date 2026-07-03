@@ -2,8 +2,6 @@ package com.ecommerce.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -12,10 +10,7 @@ import jakarta.persistence.Table;
 public class HsnData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(name = "hsn_code", nullable = false, length = 20, unique = true)
+    @Column(name = "hsn_code", nullable = false, length = 20)
     private String hsn_code;
 
     private String description;
@@ -30,14 +25,6 @@ public class HsnData {
         this.hsn_code = hsn_code;
         this.description = description;
         this.gst_rate = gst_rate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getHsn_code() {
